@@ -1,10 +1,23 @@
-.bar{display:flex;align-items:center;gap:24px;height:64px}
-.bar .logo{text-decoration:none}
-.links{display:flex;gap:22px;flex:1;font:13px system-ui;letter-spacing:.12em;text-transform:uppercase}
-.links a{text-decoration:none;color:var(--mute);white-space:nowrap}.links a:hover{color:var(--gold)}
-.btn.sm{padding:9px 16px;font-size:11px;white-space:nowrap}
-@media(max-width:760px){.bar{flex-wrap:wrap;height:auto;padding:10px 20px;gap:10px}.links{order:3;width:100%;overflow-x:auto;gap:18px;flex:none}}
-.pg{padding:60px 0 20px}.pg h1{font-size:clamp(34px,6vw,56px)}
+html{-webkit-text-size-adjust:100%}
+h1,h2,h3,p{overflow-wrap:break-word}
+.top{text-align:center;padding:28px 20px 14px}
+.brandlink{display:inline-flex;flex-direction:column;align-items:center;gap:12px;text-decoration:none}
+.biglogo{height:120px;width:auto;max-width:80vw;object-fit:contain;display:block}
+.brandname{letter-spacing:.45em;text-transform:uppercase;color:var(--gold);font-size:16px;padding-left:.45em}
+nav .wrap.menurow{display:flex;justify-content:center;align-items:center;gap:28px;height:58px;overflow-x:auto;white-space:nowrap}
+.mlink{font:13px system-ui;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--mute);flex:none}
+.mlink:hover{color:var(--gold)}
+.btn.sm{padding:10px 18px;font-size:11px;white-space:nowrap;flex:none}
+@media(max-width:760px){
+  .biglogo{height:96px}
+  nav .wrap.menurow{justify-content:flex-start;gap:22px}
+}
+.hero h1{font-size:clamp(32px,9vw,84px);line-height:1.08}
+.hero .wrap>*{margin-bottom:16px}
+.hero .btn{margin:0 8px 10px 0}
+.pg{padding:50px 0 20px}.pg h1{font-size:clamp(32px,8vw,56px)}
+section{padding:56px 0}
+section h2{margin-bottom:24px}
 .band{background:var(--card);border-block:1px solid var(--line);text-align:center;padding:70px 20px}
 .form label{display:block;font:12px system-ui;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;margin-top:14px}
 .form input,.form select,.form textarea{width:100%;background:var(--card);color:var(--text);border:1px solid var(--line);padding:12px;font:16px system-ui;margin-top:6px}
