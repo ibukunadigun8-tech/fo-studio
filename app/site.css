@@ -1,0 +1,16 @@
+.bar{display:flex;align-items:center;gap:24px;height:64px}
+.bar .logo{text-decoration:none}
+.links{display:flex;gap:22px;flex:1;font:13px system-ui;letter-spacing:.12em;text-transform:uppercase}
+.links a{text-decoration:none;color:var(--mute);white-space:nowrap}.links a:hover{color:var(--gold)}
+.btn.sm{padding:9px 16px;font-size:11px;white-space:nowrap}
+@media(max-width:760px){.bar{flex-wrap:wrap;height:auto;padding:10px 20px;gap:10px}.links{order:3;width:100%;overflow-x:auto;gap:18px;flex:none}}
+.pg{padding:60px 0 20px}.pg h1{font-size:clamp(34px,6vw,56px)}
+.band{background:var(--card);border-block:1px solid var(--line);text-align:center;padding:70px 20px}
+.form label{display:block;font:12px system-ui;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;margin-top:14px}
+.form input,.form select,.form textarea{width:100%;background:var(--card);color:var(--text);border:1px solid var(--line);padding:12px;font:16px system-ui;margin-top:6px}
+.form .chk{display:flex;gap:10px;align-items:center;text-transform:none;font-size:15px;color:var(--text)}.form .chk input{width:auto;margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ok{border:1px solid var(--gold);padding:24px;background:var(--card)}
+.err{color:#ff8a80;font-family:system-ui;margin-top:12px}
+.strip{display:flex;gap:8px;overflow-x:auto}.strip img{height:200px;width:auto;flex:none}
+.total{font:22px system-ui;color:var(--gold);margin:18px 0}
