@@ -94,7 +94,7 @@ function Content() {
   return (<div>
     {rows.map((r) => { const h = r.grp !== last; last = r.grp; return (<div key={r.key}>
       {h && <div className="grp">{r.grp}</div>}
-      {r.key === 'hero_image' ? <Field f={[r.key, r.label, 'img']} v={r.value} on={(v) => set(r.key, v)} />
+      {/image|logo/.test(r.key) ? <Field f={[r.key, r.label, 'img']} v={r.value} on={(v) => set(r.key, v)} />
         : r.key === 'booking_mode' ? <Field f={[r.key, 'Booking mode (request = you approve, instant = auto-hold)', 'select', ['request', 'instant']]} v={r.value} on={(v) => set(r.key, v)} />
         : <Field f={[r.key, r.label || r.key, r.value.length > 80 ? 'area' : 'text']} v={r.value} on={(v) => set(r.key, v)} />}
     </div>); })}
