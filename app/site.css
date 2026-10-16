@@ -90,3 +90,6 @@ footer .logo{color:#fff}
 .ok::after{filter:blur(9px);opacity:.75;z-index:-1}
 .btn.ghost{padding:12px 24px}
 @media(prefers-reduced-motion:reduce){.card::before,.ok::before,.ok::after,.btn.ghost::before{animation-duration:14s}}
+.app{display:block}
+.main{overflow-x:clip}
+
