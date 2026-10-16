@@ -1,17 +1,25 @@
+/* ===== F.O STUDIO THEME: black, white, gold ===== */
+html:root{--bg:#000;--card:#0b0b0b;--line:#242424;--text:#fff;--mute:#b8b8b8;--gold:#d4af37}
 html{-webkit-text-size-adjust:100%}
 h1,h2,h3,p{overflow-wrap:break-word}
+
+/* header */
 .top{text-align:center;padding:28px 20px 14px}
 .brandlink{display:inline-flex;flex-direction:column;align-items:center;gap:12px;text-decoration:none}
 .biglogo{height:120px;width:auto;max-width:80vw;object-fit:contain;display:block}
-.brandname{letter-spacing:.45em;text-transform:uppercase;color:var(--gold);font-size:16px;padding-left:.45em}
+.brandname{letter-spacing:.45em;text-transform:uppercase;color:#fff;font-size:16px;padding-left:.45em}
 nav .wrap.menurow{display:flex;justify-content:center;align-items:center;gap:28px;height:58px;overflow-x:auto;white-space:nowrap}
 .mlink{font:13px system-ui;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--mute);flex:none}
 .mlink:hover{color:var(--gold)}
+@media(max-width:760px){.biglogo{height:96px}nav .wrap.menurow{justify-content:flex-start;gap:22px}}
+footer .logo{color:#fff}
+
+/* buttons: gold, black text */
+.btn{background:linear-gradient(135deg,#f3dc8e,#d4af37 50%,#a8841f);color:#000;font-weight:600}
 .btn.sm{padding:10px 18px;font-size:11px;white-space:nowrap;flex:none}
-@media(max-width:760px){
-  .biglogo{height:96px}
-  nav .wrap.menurow{justify-content:flex-start;gap:22px}
-}
+.btn.ghost{background:transparent;color:#fff;border:0}
+
+/* layout */
 .hero h1{font-size:clamp(32px,9vw,84px);line-height:1.08}
 .hero .wrap>*{margin-bottom:16px}
 .hero .btn{margin:0 8px 10px 0}
@@ -19,11 +27,28 @@ nav .wrap.menurow{display:flex;justify-content:center;align-items:center;gap:28p
 section{padding:56px 0}
 section h2{margin-bottom:24px}
 .band{background:var(--card);border-block:1px solid var(--line);text-align:center;padding:70px 20px}
-.form label{display:block;font:12px system-ui;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;margin-top:14px}
-.form input,.form select,.form textarea{width:100%;background:var(--card);color:var(--text);border:1px solid var(--line);padding:12px;font:16px system-ui;margin-top:6px}
-.form .chk{display:flex;gap:10px;align-items:center;text-transform:none;font-size:15px;color:var(--text)}.form .chk input{width:auto;margin:0}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.ok{border:1px solid var(--gold);padding:24px;background:var(--card)}
-.err{color:#ff8a80;font-family:system-ui;margin-top:12px}
 .strip{display:flex;gap:8px;overflow-x:auto}.strip img{height:200px;width:auto;flex:none}
+
+/* forms */
+.form label{display:block;font:12px system-ui;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;margin-top:14px}
+.form input,.form select,.form textarea{width:100%;background:var(--card);color:#fff;border:1px solid var(--line);padding:12px;font:16px system-ui;margin-top:6px}
+.form .chk{display:flex;gap:10px;align-items:center;text-transform:none;font-size:15px;color:#fff}.form .chk input{width:auto;margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:#ff8a80;font-family:system-ui;margin-top:12px}
 .total{font:22px system-ui;color:var(--gold);margin:18px 0}
+
+/* ===== BORDER BEAM (rotating gold + white light) ===== */
+@property --beam-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes beamspin{to{--beam-angle:360deg}}
+.card,.ok,.btn.ghost{position:relative;border-radius:14px;border:1px solid #1c1c1c;isolation:isolate}
+.card{overflow:hidden}
+.card::before,.ok::before,.btn.ghost::before,.ok::after{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;padding:2px;pointer-events:none;z-index:3;
+  background:conic-gradient(from var(--beam-angle),transparent 0 52%,rgba(255,255,255,.18) 62%,#d4af37 76%,#fff 86%,#d4af37 93%,transparent 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:beamspin 3.6s linear infinite}
+.ok{overflow:visible;padding:24px;background:var(--card)}
+.ok::after{filter:blur(9px);opacity:.75;z-index:-1}
+.btn.ghost{padding:12px 24px}
+@media(prefers-reduced-motion:reduce){.card::before,.ok::before,.ok::after,.btn.ghost::before{animation-duration:14s}}
