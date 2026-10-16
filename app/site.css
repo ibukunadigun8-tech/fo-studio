@@ -1,25 +1,62 @@
-/* ===== F.O STUDIO THEME: black, white, gold ===== */
+/* ===== F.O STUDIO: black, white, gold + sidebar ===== */
 html:root{--bg:#000;--card:#0b0b0b;--line:#242424;--text:#fff;--mute:#b8b8b8;--gold:#d4af37}
 html{-webkit-text-size-adjust:100%}
 h1,h2,h3,p{overflow-wrap:break-word}
 
-/* header */
-.top{text-align:center;padding:28px 20px 14px}
-.brandlink{display:inline-flex;flex-direction:column;align-items:center;gap:12px;text-decoration:none}
-.biglogo{height:120px;width:auto;max-width:80vw;object-fit:contain;display:block}
-.brandname{letter-spacing:.45em;text-transform:uppercase;color:#fff;font-size:16px;padding-left:.45em}
-nav .wrap.menurow{display:flex;justify-content:center;align-items:center;gap:28px;height:58px;overflow-x:auto;white-space:nowrap}
-.mlink{font:13px system-ui;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--mute);flex:none}
-.mlink:hover{color:var(--gold)}
-@media(max-width:760px){.biglogo{height:96px}nav .wrap.menurow{justify-content:flex-start;gap:22px}}
-footer .logo{color:#fff}
+/* ---- sidebar layout ---- */
+.app{display:flex;min-height:100vh}
+.main{flex:1;min-width:0;margin-left:264px;transition:margin-left .24s cubic-bezier(.23,1,.32,1)}
+.side{position:fixed;top:0;bottom:0;left:0;width:264px;z-index:50;display:flex;flex-direction:column;background:#050505;border-right:1px solid var(--line);overflow:hidden;transition:width .24s cubic-bezier(.23,1,.32,1),transform .24s cubic-bezier(.23,1,.32,1)}
+.shead{display:flex;align-items:center;gap:10px;padding:18px 16px;min-height:76px}
+.sbrand,.mbrand{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-decoration:none}
+.mbrand{flex:none}
+.slogo{height:54px;width:auto;max-width:130px;object-fit:contain;flex:none}
+.sname{color:#fff;letter-spacing:.3em;text-transform:uppercase;font-size:13px;white-space:nowrap;overflow:hidden}
+.sbtn{flex:none;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer}
+.sbtn:hover{background:#ffffff14;color:#fff}
+.stoggle svg{transition:transform .24s}
+.sclose{display:none}
+.snav{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 10px}
+.slab{font:600 10.5px system-ui;letter-spacing:.14em;text-transform:uppercase;color:#777;padding:18px 14px 6px;white-space:nowrap;overflow:hidden}
+.sitem{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:2px;border-radius:10px;color:var(--mute);text-decoration:none;font:500 14px system-ui;white-space:nowrap;transition:background .15s,color .15s}
+.sitem:hover{background:#ffffff0d;color:#fff}
+.sitem.on{background:#ffffff14;color:#fff}
+.sitem.on svg{color:var(--gold)}
+.sitem.on:before{content:"";position:absolute;left:-10px;top:11px;bottom:11px;width:3px;border-radius:3px;background:var(--gold)}
+.slabel,.sbooktxt{overflow:hidden;transition:opacity .12s}
+.sfoot{padding:14px 10px;border-top:1px solid var(--line)}
+.sbook{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;border-radius:10px;background:linear-gradient(135deg,#f3dc8e,#d4af37 50%,#a8841f);color:#000;font:600 12px system-ui;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;white-space:nowrap}
+.mbar,.scrim{display:none}
 
-/* buttons: gold, black text */
+@media(min-width:861px){
+  .app.col .side{width:72px}
+  .app.col .main{margin-left:72px}
+  .app.col .sname,.app.col .slabel,.app.col .sbooktxt{opacity:0;width:0}
+  .app.col .slab{opacity:0;height:8px;padding:0}
+  .app.col .shead{flex-direction:column;padding:16px 0}
+  .app.col .sbrand{flex:none}
+  .app.col .slogo{height:36px;max-width:44px}
+  .app.col .stoggle svg{transform:rotate(180deg)}
+  .app.col .sitem{justify-content:center;gap:0;padding:12px 0}
+  .app.col .sitem.on:before{left:-10px}
+  .app.col .sbook{gap:0}
+}
+@media(max-width:860px){
+  .main{margin-left:0}
+  .side{width:290px;transform:translateX(-100%)}
+  .app.open .side{transform:none}
+  .stoggle{display:none}
+  .sclose{display:grid}
+  .mbar{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40;background:#000d;backdrop-filter:blur(8px);padding:10px 16px;border-bottom:1px solid var(--line)}
+  .app.open .scrim{display:block;position:fixed;inset:0;background:#000b;z-index:45}
+}
+
+/* ---- buttons: gold, black text ---- */
 .btn{background:linear-gradient(135deg,#f3dc8e,#d4af37 50%,#a8841f);color:#000;font-weight:600}
 .btn.sm{padding:10px 18px;font-size:11px;white-space:nowrap;flex:none}
 .btn.ghost{background:transparent;color:#fff;border:0}
 
-/* layout */
+/* ---- layout ---- */
 .hero h1{font-size:clamp(32px,9vw,84px);line-height:1.08}
 .hero .wrap>*{margin-bottom:16px}
 .hero .btn{margin:0 8px 10px 0}
@@ -28,8 +65,9 @@ section{padding:56px 0}
 section h2{margin-bottom:24px}
 .band{background:var(--card);border-block:1px solid var(--line);text-align:center;padding:70px 20px}
 .strip{display:flex;gap:8px;overflow-x:auto}.strip img{height:200px;width:auto;flex:none}
+footer .logo{color:#fff}
 
-/* forms */
+/* ---- forms ---- */
 .form label{display:block;font:12px system-ui;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;margin-top:14px}
 .form input,.form select,.form textarea{width:100%;background:var(--card);color:#fff;border:1px solid var(--line);padding:12px;font:16px system-ui;margin-top:6px}
 .form .chk{display:flex;gap:10px;align-items:center;text-transform:none;font-size:15px;color:#fff}.form .chk input{width:auto;margin:0}
@@ -37,7 +75,7 @@ section h2{margin-bottom:24px}
 .err{color:#ff8a80;font-family:system-ui;margin-top:12px}
 .total{font:22px system-ui;color:var(--gold);margin:18px 0}
 
-/* ===== BORDER BEAM (rotating gold + white light) ===== */
+/* ---- border beam (rotating gold + white light) ---- */
 @property --beam-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
 @keyframes beamspin{to{--beam-angle:360deg}}
 .card,.ok,.btn.ghost{position:relative;border-radius:14px;border:1px solid #1c1c1c;isolation:isolate}
