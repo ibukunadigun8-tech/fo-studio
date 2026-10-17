@@ -92,4 +92,11 @@ footer .logo{color:#fff}
 @media(prefers-reduced-motion:reduce){.card::before,.ok::before,.ok::after,.btn.ghost::before{animation-duration:14s}}
 .app{display:block}
 .main{overflow-x:clip}
+.pkg{border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:12px;background:#080808}
+.pkg.pop{border-color:var(--gold)}
+.badge{display:inline-block;background:var(--gold);color:#000;font:600 10px system-ui;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:20px;margin-bottom:8px}
+.pkg ul{margin:8px 0;padding-left:18px;color:var(--mute);font-size:14px}
+.spec{font:13px system-ui;color:var(--mute)}
+.dep{font:13px system-ui;color:var(--gold);margin:8px 0}
+
 
