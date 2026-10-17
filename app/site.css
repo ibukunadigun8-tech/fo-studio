@@ -102,5 +102,9 @@ footer .logo{color:#fff}
 .logoband img{width:100%;max-width:600px;height:auto;max-height:220px;object-fit:contain;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse at center,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse at center,#000 55%,transparent 100%)}
 .mbrand img{height:42px !important;max-width:130px;flex:none;object-fit:contain;mix-blend-mode:screen}
 @media(max-width:480px){.mbar .sname{display:none}}
+@media(max-width:480px){.mbar .sname{display:inline !important}}
+.logoband{padding-left:40px;padding-right:40px}
+.logoband img{max-width:380px}
+
 
 
