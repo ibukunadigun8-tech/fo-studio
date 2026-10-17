@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { useSite, money, Shell } from '../lib/data';
 
 export default function Home() {
-  const d = useSite(['spaces', 'services', 'testimonials', 'event_types']);
+  const d = useSite(['spaces', 'services', 'testimonials', 'event_types', 'trusted_by', 'gallery']);
   if (!d) return <div className="load">F.O STUDIO</div>;
   const { c } = d;
+  const ig = [...d.gallery].reverse().slice(0, 6);
   return (
     <Shell c={c}>
       <header className="hero" style={c.hero_image ? { backgroundImage: `url(${c.hero_image})` } : {}}>
@@ -17,6 +18,15 @@ export default function Home() {
           <Link className="btn ghost" href="/events">Explore events</Link>
         </div>
       </header>
+
+      {d.trusted_by.length > 0 && (
+        <section><div className="wrap">
+          <p className="eyebrow" style={{ textAlign: 'center' }}>{c.trusted_title || 'Trusted by'}</p>
+          <div className="trust">{d.trusted_by.map((t) => (
+            t.logo_url ? <img key={t.id} src={t.logo_url} alt={t.name} loading="lazy" /> : <span key={t.id}>{t.name}</span>
+          ))}</div>
+        </div></section>
+      )}
 
       <section><div className="wrap">
         <p className="eyebrow">What we do</p>
@@ -38,7 +48,7 @@ export default function Home() {
       <section><div className="wrap">
         <p className="eyebrow">{c.tagline}</p><h2>{c.about_title}</h2>
         <p className="mute" style={{ maxWidth: 700, fontSize: 18 }}>{c.about_text}</p>
-        <Link className="btn ghost" href="/about">Learn more</Link>
+        <Link className="btn ghost" href="/about">Our story</Link>
       </div></section>
 
       <section><div className="wrap">
@@ -79,9 +89,23 @@ export default function Home() {
       <section><div className="wrap">
         <h2>{c.testimonials_title}</h2>
         <div className="grid">{d.testimonials.map((t) => (
-          <div className="card" key={t.id}><div className="body"><p>“{t.quote}”</p>
-            <p className="price">{t.client_name}<span className="mute"> · {t.client_role}</span></p></div></div>))}</div>
+          <div className="card" key={t.id}><div className="body">
+            {t.photo_url && <img className="avatar" src={t.photo_url} alt={t.client_name} loading="lazy" />}
+            <p>“{t.quote}”</p>
+            <p className="price">{t.client_name}<span className="mute"> · {t.client_role}</span></p>
+          </div></div>))}</div>
       </div></section>
+
+      {c.instagram && ig.length > 0 && (
+        <section><div className="wrap">
+          <p className="eyebrow">Follow along</p>
+          <h2>{c.instagram_handle || 'Instagram'}</h2>
+          <div className="igstrip">{ig.map((g) => (
+            <a key={g.id} href={c.instagram} target="_blank" rel="noopener noreferrer"><img src={g.image_url} alt={g.caption || ''} loading="lazy" /></a>
+          ))}</div>
+          <a className="btn ghost" href={c.instagram} target="_blank" rel="noopener noreferrer">Follow on Instagram</a>
+        </div></section>
+      )}
 
       <div className="band">
         <h2>Ready to create?</h2>
