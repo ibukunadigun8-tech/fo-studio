@@ -165,7 +165,8 @@ export default function Admin() {
     </div>
     <p>
       <a className="btn sm" href="/admin/requests">Booking requests</a>{' '}
-      <a className="btn sm" href="/admin/event-requests">Event requests</a>
+      <a className="btn sm" href="/admin/event-requests">Event requests</a>{' '}
+      <a className="btn sm" href="/admin/gallery">Portfolio photos</a>
     </p>
     <div className="tabs">{['Content', ...Object.keys(TABLES)].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
     {tab === 'Content' ? <Content /> : <Editor key={tab} cfg={TABLES[tab]} />}
