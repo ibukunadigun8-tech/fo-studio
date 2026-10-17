@@ -108,6 +108,27 @@ footer .logo{color:#fff}
 .mbar .sname{font-size:11px;letter-spacing:.2em;white-space:normal;line-height:1.4}
 .load{font-size:0 !important;letter-spacing:0 !important;padding:0 24px;text-align:center}
 .load::after{content:"Fatusi Olamilekan Photography";font-size:13px;letter-spacing:.35em;text-transform:uppercase;line-height:2;color:var(--gold);display:block;max-width:300px}
+.wafab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;background:#25D366;color:#fff;display:grid;place-items:center;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,.5);animation:wapulse 2.6s ease-out infinite}
+@keyframes wapulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.55),0 6px 20px rgba(0,0,0,.5)}70%{box-shadow:0 0 0 16px rgba(37,211,102,0),0 6px 20px rgba(0,0,0,.5)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0),0 6px 20px rgba(0,0,0,.5)}}
+.pills{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;margin-top:20px}
+.pill{white-space:nowrap;background:none;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:30px;font:12px system-ui;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.pill.on{background:var(--gold);color:#000;border-color:var(--gold)}
+.pfgrid{columns:2;column-gap:8px}
+@media(min-width:760px){.pfgrid{columns:3;column-gap:12px}}
+.pfitem{display:block;width:100%;padding:0;border:0;background:#111;margin:0 0 8px;break-inside:avoid;cursor:zoom-in;overflow:hidden}
+.pfitem img{width:100%;height:auto;display:block;transition:transform .5s,opacity .3s}
+.pfitem:hover img{transform:scale(1.04);opacity:.85}
+.lb{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:pan-y}
+.lb img{max-width:100%;max-height:78vh;object-fit:contain;display:block}
+.lbcap{color:var(--mute);font:14px system-ui;text-align:center;padding:14px 60px 0;min-height:44px}
+.lbcount{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:20px;color:var(--mute);font:13px system-ui;letter-spacing:.15em}
+.lbx,.lbn{position:absolute;background:rgba(255,255,255,.08);color:#fff;border:0;border-radius:50%;width:46px;height:46px;font-size:22px;cursor:pointer}
+.lbx{top:calc(12px + env(safe-area-inset-top,0px));right:14px}
+.lbn.l{left:8px;top:50%}.lbn.r{right:8px;top:50%}
+@media(max-width:600px){.lbn{display:none}}
+.gtile{border:1px solid var(--line);padding:8px;background:var(--card)}
+.gtile img{width:100%;height:120px;object-fit:cover;display:block;margin-bottom:6px}
+.gtile input{width:100%;margin:0 0 6px}
 
 
 
