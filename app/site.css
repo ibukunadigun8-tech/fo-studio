@@ -105,6 +105,8 @@ footer .logo{color:#fff}
 @media(max-width:480px){.mbar .sname{display:inline !important}}
 .logoband{padding-left:40px;padding-right:40px}
 .logoband img{max-width:380px}
+.mbar .sname{font-size:11px;letter-spacing:.2em;white-space:normal;line-height:1.4}
+
 
 
 
