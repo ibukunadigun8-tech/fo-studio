@@ -14,7 +14,7 @@ export default function Home() {
           <h1>{c.hero_title}</h1>
           <p>{c.hero_subtitle}</p>
           <Link className="btn" href="/spaces">Explore the studio</Link>{' '}
-          <Link className="btn" href="/events">Explore events</Link>
+          <Link className="btn ghost" href="/events">Explore events</Link>
         </div>
       </header>
 
@@ -81,12 +81,12 @@ export default function Home() {
         <div className="grid">{d.testimonials.map((t) => (
           <div className="card" key={t.id}><div className="body"><p>“{t.quote}”</p>
             <p className="price">{t.client_name}<span className="mute"> · {t.client_role}</span></p></div></div>))}</div>
-      </section>
+      </div></section>
 
       <div className="band">
         <h2>Ready to create?</h2>
         <Link className="btn" href="/spaces">Explore the studio</Link>{' '}
-        <Link className="btn" href="/events">Explore events</Link>
+        <Link className="btn ghost" href="/events">Explore events</Link>
       </div>
     </Shell>
   );
