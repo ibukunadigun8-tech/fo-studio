@@ -129,6 +129,14 @@ footer .logo{color:#fff}
 .gtile{border:1px solid var(--line);padding:8px;background:var(--card)}
 .gtile img{width:100%;height:120px;object-fit:cover;display:block;margin-bottom:6px}
 .gtile input{width:100%;margin:0 0 6px}
+.wrap.pg{padding-left:20px;padding-right:20px}
+.trust{display:flex;flex-wrap:wrap;gap:22px 34px;align-items:center;justify-content:center}
+.trust img{height:34px;width:auto;filter:grayscale(1) brightness(1.6);opacity:.85}
+.trust span{font:13px system-ui;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;margin-bottom:10px;display:block}
+.igstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:16px 0}
+.igstrip img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.aboutimg{width:100%;max-width:420px;display:block;margin:0 0 24px}
 
 
 
