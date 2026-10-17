@@ -106,6 +106,8 @@ footer .logo{color:#fff}
 .logoband{padding-left:40px;padding-right:40px}
 .logoband img{max-width:380px}
 .mbar .sname{font-size:11px;letter-spacing:.2em;white-space:normal;line-height:1.4}
+.load{font-size:0 !important;letter-spacing:0 !important;padding:0 24px;text-align:center}
+.load::after{content:"Fatusi Olamilekan Photography";font-size:13px;letter-spacing:.35em;text-transform:uppercase;line-height:2;color:var(--gold);display:block;max-width:300px}
 
 
 
