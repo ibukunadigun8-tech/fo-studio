@@ -9,9 +9,10 @@ const depText = (c, p) => {
 };
 
 export default function Events() {
-  const d = useSite(['event_types', 'event_packages', 'event_addons']);
+  const d = useSite(['event_types', 'event_packages', 'event_addons', 'faqs']);
   if (!d) return <div className="load">F.O STUDIO</div>;
   const { c } = d;
+  const faqs = d.faqs.filter((f) => f.scope === 'events');
   return (
     <Shell c={c}>
       <div className="wrap pg">
@@ -29,7 +30,7 @@ export default function Events() {
                   <h3>{t.name}</h3>
                   <p className="mute">{t.tagline}</p>
                   <p className="mute" style={{ fontSize: 14 }}>{t.description}</p>
-                  {t.images?.length > 0 && <div className="strip">{t.images.map((u) => <img key={u} src={u} alt="" />)}</div>}
+                  {t.images?.length > 0 && <div className="strip">{t.images.map((u) => <img key={u} src={u} alt="" loading="lazy" />)}</div>}
                   {t.starting_price ? <p className="price">From {money(c, t.starting_price)}</p> : null}
                   {pk.map((p) => (
                     <div className={'pkg' + (p.is_popular ? ' pop' : '')} key={p.id}>
@@ -61,6 +62,13 @@ export default function Events() {
                 </div></div>
               ))}
             </div>
+          </>
+        )}
+
+        {faqs.length > 0 && (
+          <>
+            <h2 style={{ marginTop: 50 }}>Good to know</h2>
+            {faqs.map((f) => <details key={f.id}><summary>{f.question}</summary><p className="mute">{f.answer}</p></details>)}
           </>
         )}
 
