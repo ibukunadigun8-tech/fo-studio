@@ -23,9 +23,14 @@ const TABLES = {
     ['name', 'Name'], ['description', 'Description', 'area'], ['price', 'Price', 'num'],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   FAQ: { t: 'faqs', title: 'question', fields: [
-    ['question', 'Question'], ['answer', 'Answer', 'area'], ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
+    ['question', 'Question'], ['answer', 'Answer', 'area'],
+    ['scope', 'Show on (general = About page, events = Events page)', 'select', ['general', 'events']],
+    ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   Reviews: { t: 'testimonials', title: 'client_name', fields: [
-    ['client_name', 'Client name'], ['client_role', 'Role'], ['quote', 'Quote', 'area'],
+    ['client_name', 'Client name'], ['client_role', 'Role'], ['photo_url', 'Client photo (optional)', 'img'], ['quote', 'Quote', 'area'],
+    ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
+  'Trusted by': { t: 'trusted_by', title: 'name', fields: [
+    ['name', 'Client / brand name'], ['logo_url', 'Logo (optional, white or light works best)', 'img'],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   Gallery: { t: 'gallery', title: 'caption', fields: [
     ['image_url', 'Photo', 'img'], ['caption', 'Caption'], ['category', 'Category'],
@@ -68,7 +73,7 @@ function Field({ f, v, on }) {
     <input type="file" accept="image/*" multiple onChange={async (e) => { const out = [...(v || [])]; for (const fl of e.target.files) { const u = await upload(fl); if (u) out.push(u); } on(out); }} /></div>);
   if (type === 'list') return <div><label>{label}</label><textarea rows={4} value={(v || []).join('\n')} onChange={(e) => on(e.target.value.split('\n'))} /></div>;
   if (type === 'area') return <div><label>{label}</label><textarea rows={4} value={v ?? ''} onChange={(e) => on(e.target.value)} /></div>;
-  if (type === 'select') return <div><label>{label}</label><select value={v} onChange={(e) => on(e.target.value)}>{opts.map((o) => <option key={o}>{o}</option>)}</select></div>;
+  if (type === 'select') return <div><label>{label}</label><select value={v || opts[0]} onChange={(e) => on(e.target.value)}>{opts.map((o) => <option key={o}>{o}</option>)}</select></div>;
   if (type === 'num') return <div><label>{label}</label><input type="number" value={v ?? ''} onChange={(e) => on(e.target.value === '' ? null : Number(e.target.value))} /></div>;
   return <div><label>{label}</label><input value={v ?? ''} onChange={(e) => on(e.target.value)} /></div>;
 }
@@ -137,7 +142,7 @@ function Content() {
       {h && <div className="grp">{r.grp}</div>}
       {/image|logo/.test(r.key) ? <Field f={[r.key, r.label, 'img']} v={r.value} on={(v) => set(r.key, v)} />
         : r.key === 'booking_mode' ? <Field f={[r.key, 'Booking mode (request = you approve, instant = auto-hold)', 'select', ['request', 'instant']]} v={r.value} on={(v) => set(r.key, v)} />
-        : <Field f={[r.key, r.label || r.key, (r.value || '').length > 80 ? 'area' : 'text']} v={r.value} on={(v) => set(r.key, v)} />}
+        : <Field f={[r.key, r.label || r.key, (r.value || '').length > 80 || r.key === 'about_story' ? 'area' : 'text']} v={r.value} on={(v) => set(r.key, v)} />}
     </div>); })}
     <button className="btn" onClick={save}>Save all content</button>
   </div>);
