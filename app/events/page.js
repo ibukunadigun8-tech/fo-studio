@@ -1,5 +1,7 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
+import { supabase } from '../../lib/supabase';
 import { useSite, money, Shell } from '../../lib/data';
 
 const depText = (c, p) => {
@@ -7,6 +9,55 @@ const depText = (c, p) => {
   if (p.deposit_type === 'fixed') return `Deposit: ${money(c, p.deposit_value)} to hold your date`;
   return 'No deposit required';
 };
+
+function LeadForm({ c, types }) {
+  const [f, setF] = useState({ name: '', phone: '', interest: types[0]?.name || '' });
+  const [err, setErr] = useState('');
+  const [done, setDone] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setErr('');
+    if (!f.name.trim() || f.phone.replace(/\D/g, '').length < 7) return setErr('Please enter your name and a valid phone number.');
+    setBusy(true);
+    const { error } = await supabase.from('leads').insert({ name: f.name.trim(), phone: f.phone.trim(), interest: f.interest, source: 'pricing guide' });
+    if (error) { setBusy(false); return setErr('Could not send: ' + error.message); }
+    fetch('https://formsubmit.co/ajax/' + c.email, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ _subject: 'New pricing guide request - ' + f.name, _template: 'table', _captcha: 'false', Name: f.name, Phone: f.phone, Interested_in: f.interest }),
+    }).catch(() => {});
+    setBusy(false);
+    setDone(true);
+  }
+
+  if (done) {
+    const msg = `Hello ${c.studio_full_name}, I am ${f.name}. Please send me your pricing guide for ${f.interest}.`;
+    return (
+      <div className="ok">
+        <h3>Thank you, {f.name.split(' ')[0]}.</h3>
+        <p className="mute">We have your request and will send the pricing guide to your phone shortly.</p>
+        {c.pricing_guide_url && <p><a className="btn" href={c.pricing_guide_url} target="_blank" rel="noopener noreferrer">Open pricing guide now</a></p>}
+        {c.whatsapp && <p><a className="btn ghost" href={`https://wa.me/${String(c.whatsapp).replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`} target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a></p>}
+      </div>
+    );
+  }
+
+  return (
+    <form className="form" onSubmit={submit}>
+      <label>Your name</label>
+      <input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+      <label>Phone / WhatsApp</label>
+      <input type="tel" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />
+      <label>What are you planning?</label>
+      <select value={f.interest} onChange={(e) => setF({ ...f, interest: e.target.value })}>
+        {types.map((t) => <option key={t.id}>{t.name}</option>)}
+      </select>
+      <button className="btn" disabled={busy}>{busy ? 'Sending…' : 'Send me the pricing guide'}</button>
+      {err && <p className="err">{err}</p>}
+    </form>
+  );
+}
 
 export default function Events() {
   const d = useSite(['event_types', 'event_packages', 'event_addons', 'faqs']);
@@ -63,6 +114,15 @@ export default function Events() {
               ))}
             </div>
           </>
+        )}
+
+        {d.event_types.length > 0 && (
+          <div style={{ marginTop: 50, maxWidth: 560 }}>
+            <p className="eyebrow">Not ready to book?</p>
+            <h2>Get our pricing guide</h2>
+            <p className="mute">Leave your details and we will send you our full event pricing.</p>
+            <LeadForm c={c} types={d.event_types} />
+          </div>
         )}
 
         {faqs.length > 0 && (
