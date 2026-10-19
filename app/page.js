@@ -1,15 +1,60 @@
 'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSite, money, Shell } from '../lib/data';
 
+const HERO_CSS = `
+.hs{position:absolute;inset:0;z-index:0;overflow:hidden;background:#000}
+.hs img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.08);transition:opacity 1.4s ease}
+.hs img.on{opacity:1;animation:hskb 9s ease-out forwards}
+@keyframes hskb{from{transform:scale(1.08)}to{transform:scale(1)}}
+.hs::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.35) 45%,rgba(0,0,0,.88))}
+.hero .wrap{position:relative;z-index:2}
+.hdots{position:absolute;left:0;right:0;bottom:18px;z-index:3;display:flex;justify-content:center;gap:10px}
+.hdots button{width:9px;height:9px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.4);cursor:pointer}
+.hdots button.on{background:var(--gold);width:26px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){.hs img.on{animation:none}.hs img{transition:none}}
+`;
+
 export default function Home() {
   const d = useSite(['spaces', 'services', 'testimonials', 'event_types', 'trusted_by', 'gallery']);
+  const [i, setI] = useState(0);
+
+  const c0 = d ? d.c : {};
+  const heroPics = d ? d.gallery.filter((g) => /^hero/i.test((g.category || '').trim())).map((g) => g.image_url) : [];
+  const slides = Array.from(new Set([c0.hero_image, ...heroPics].filter(Boolean)));
+
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const t = setInterval(() => setI((v) => (v + 1) % slides.length), 5000);
+    return () => clearInterval(t);
+  }, [slides.length, i]);
+
   if (!d) return <div className="load">F.O STUDIO</div>;
   const { c } = d;
-  const ig = [...d.gallery].reverse().slice(0, 6);
+  const ig = [...d.gallery].filter((g) => !/^hero/i.test((g.category || '').trim())).reverse().slice(0, 6);
+  const show = slides.length > 0;
+
   return (
     <Shell c={c}>
-      <header className="hero" style={c.hero_image ? { backgroundImage: `url(${c.hero_image})` } : {}}>
+      <header className="hero" style={show ? { position: 'relative', overflow: 'hidden', backgroundImage: 'none', backgroundColor: '#000' } : {}}>
+        {show && (
+          <>
+            <style>{HERO_CSS}</style>
+            <div className="hs" aria-hidden="true">
+              {slides.map((u, k) => (
+                <img key={u} src={u} alt="" className={k === i % slides.length ? 'on' : ''} loading={k === 0 ? 'eager' : 'lazy'} decoding="async" />
+              ))}
+            </div>
+            {slides.length > 1 && (
+              <div className="hdots">
+                {slides.map((u, k) => (
+                  <button key={u} aria-label={`Show photo ${k + 1}`} className={k === i % slides.length ? 'on' : ''} onClick={() => setI(k)} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
         <div className="wrap">
           <p className="eyebrow">{c.studio_full_name}</p>
           <h1>{c.hero_title}</h1>
