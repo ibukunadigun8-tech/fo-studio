@@ -52,6 +52,11 @@ const TABLES = {
   'Event add-ons': { t: 'event_addons', title: 'name', fields: [
     ['name', 'Name'], ['description', 'Description', 'area'], ['price', 'Price', 'num'],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
+  Leads: { t: 'leads', title: 'name', fields: [
+    ['name', 'Name'], ['phone', 'Phone / WhatsApp'], ['email', 'Email'], ['interest', 'Interested in'],
+    ['note', 'Your note', 'area'], ['status', 'Status', 'select', ['new', 'contacted', 'converted', 'closed']]] },
+  'Blocked dates': { t: 'blocked_dates', title: 'note', fields: [
+    ['note', 'Reason (e.g. Fully booked, Holiday)'], ['day', 'Date', 'date'], ['is_active', 'Active (blocks this date)', 'bool']] },
 };
 
 function EvTypeSelect({ label, v, on }) {
@@ -65,6 +70,7 @@ function Field({ f, v, on }) {
   const [k, label, type, opts] = f;
   if (type === 'evtype') return <EvTypeSelect label={label} v={v} on={on} />;
   if (type === 'bool') return <label className="chk"><input type="checkbox" checked={!!v} onChange={(e) => on(e.target.checked)} />{label}</label>;
+  if (type === 'date') return <div><label>{label}</label><input type="date" value={v || ''} onChange={(e) => on(e.target.value)} /></div>;
   if (type === 'img') return (<div><label>{label}</label>
     {v && <div className="thumbs"><div><img src={v} alt="" /></div></div>}
     <input type="file" accept="image/*" onChange={async (e) => { const u = e.target.files[0] && await upload(e.target.files[0]); if (u) on(u); }} /></div>);
@@ -83,7 +89,7 @@ function Editor({ cfg }) {
   const [open, setOpen] = useState(null);
   const [tn, setTn] = useState({});
   const load = async () => {
-    const { data } = await supabase.from(cfg.t).select('*').order('sort_order');
+    const { data } = await supabase.from(cfg.t).select('*').order('sort_order', { ascending: cfg.t !== 'leads' });
     setRows(data || []);
     if (cfg.t === 'event_packages') {
       const { data: t } = await supabase.from('event_types').select('id,name');
@@ -118,10 +124,16 @@ function Editor({ cfg }) {
     const { error } = await supabase.from(cfg.t).insert(base);
     if (error) alert(error.message); load();
   };
+  const extra = (r) => {
+    if (cfg.t === 'event_packages' && tn[r.event_type_id]) return ' · ' + tn[r.event_type_id];
+    if (cfg.t === 'blocked_dates' && r.day) return ' · ' + r.day;
+    if (cfg.t === 'leads' && r.phone) return ' · ' + r.phone;
+    return '';
+  };
   return (<div>
     <button className="btn" onClick={add}>+ Add new</button><br /><br />
     {rows.map((r) => (<div className="row" key={r.id}>
-      <h4 onClick={() => setOpen(open === r.id ? null : r.id)}>{open === r.id ? '▾' : '▸'} {r[cfg.title] || 'Untitled'}{cfg.t === 'event_packages' && tn[r.event_type_id] ? ' · ' + tn[r.event_type_id] : ''}</h4>
+      <h4 onClick={() => setOpen(open === r.id ? null : r.id)}>{open === r.id ? '▾' : '▸'} {r[cfg.title] || 'Untitled'}{extra(r)}</h4>
       {open === r.id && <>
         {cfg.fields.map((f) => <Field key={f[0]} f={f} v={r[f[0]]} on={(v) => set(r.id, f[0], v)} />)}
         <button className="btn" onClick={() => save(r)}>Save</button>{' '}
@@ -159,7 +171,7 @@ export default function Admin() {
   }, []);
   if (session === undefined) return <div className="load">…</div>;
   if (!session) return (<div className="adm" style={{ maxWidth: 380, marginTop: 80 }}>
-    <h2>F.O Studio Admin</h2>
+    <h2>Fatusi Olamilekan Photography</h2>
     <label>Email</label><input value={em} onChange={(e) => setEm(e.target.value)} />
     <label>Password</label><input type="password" value={pw} onChange={(e) => setPw(e.target.value)} />
     <button className="btn" onClick={async () => { const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw }); if (error) alert(error.message); }}>Log in</button>
