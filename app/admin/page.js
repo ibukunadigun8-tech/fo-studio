@@ -24,7 +24,7 @@ const TABLES = {
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   FAQ: { t: 'faqs', title: 'question', fields: [
     ['question', 'Question'], ['answer', 'Answer', 'area'],
-    ['scope', 'Show on (general = About page, events = Events page)', 'select', ['general', 'events']],
+    ['scope', 'Show on (general = About page, events = Events page and homepage)', 'select', ['general', 'events']],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   Reviews: { t: 'testimonials', title: 'client_name', fields: [
     ['client_name', 'Client name'], ['client_role', 'Role'], ['photo_url', 'Client photo (optional)', 'img'], ['quote', 'Quote', 'area'],
@@ -32,6 +32,10 @@ const TABLES = {
   'Trusted by': { t: 'trusted_by', title: 'name', fields: [
     ['name', 'Client / brand name'], ['logo_url', 'Logo (optional, white or light works best)', 'img'],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
+  Projects: { t: 'projects', title: 'title', fields: [
+    ['title', 'Project title (e.g. Anne & Ebitari)'], ['category', 'Category (e.g. Wedding, Naming ceremony)'], ['year', 'Year'],
+    ['cover_image', 'Cover photo', 'img'], ['story', 'Story (a few sentences about the event)', 'area'],
+    ['images', 'Project photos', 'imgs'], ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   Gallery: { t: 'gallery', title: 'caption', fields: [
     ['image_url', 'Photo', 'img'], ['caption', 'Caption'], ['category', 'Category'],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
