@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useSite, Shell } from '../../lib/data';
+import { useSite, Shell, Reveal } from '../../lib/data';
 
 export default function About() {
   const d = useSite(['faqs', 'gallery']);
@@ -11,10 +11,10 @@ export default function About() {
   return (
     <Shell c={c}>
       <div className="wrap pg" style={{ maxWidth: 800 }}>
-        <p className="eyebrow">{c.tagline}</p>
+        <p className="lbl">// {c.tagline}</p>
         <h1>{c.about_title}</h1>
         {c.about_image && <img className="aboutimg" src={c.about_image} alt={c.studio_full_name} />}
-        <p className="mute" style={{ fontSize: 18, whiteSpace: 'pre-line' }}>{c.about_story || c.about_text}</p>
+        <Reveal><p className="mute" style={{ fontSize: 18, whiteSpace: 'pre-line' }}>{c.about_story || c.about_text}</p></Reveal>
 
         {bts.length > 0 && (
           <>
@@ -22,9 +22,6 @@ export default function About() {
             <div className="igstrip">{bts.map((g) => <img key={g.id} src={g.image_url} alt={g.caption || ''} loading="lazy" />)}</div>
           </>
         )}
-
-        <h2 style={{ marginTop: 40 }}>Studio rules</h2><p className="mute">{c.studio_rules}</p>
-        <h2>Cancellation</h2><p className="mute">{c.cancellation_policy}</p>
 
         {faqs.length > 0 && (
           <>
@@ -35,8 +32,8 @@ export default function About() {
 
         <p style={{ marginTop: 40 }}>
           {c.instagram && <><a className="btn ghost" href={c.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>{' '}</>}
-          <Link className="btn" href="/spaces">Explore the studio</Link>{' '}
-          <Link className="btn ghost" href="/events">Explore events</Link>
+          <Link className="btn" href="/events">Explore events</Link>{' '}
+          <Link className="btn ghost" href="/projects">Our projects</Link>
         </p>
       </div>
     </Shell>
