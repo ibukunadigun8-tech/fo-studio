@@ -57,14 +57,24 @@ export default function ClientGallery() {
   const photos = (g && Array.isArray(g.photos) ? g.photos : []);
   const base = slugify(g && g.title);
 
+  async function lookup(k) {
+    try {
+      const { data, error } = await supabase.functions.invoke('r2', { body: { action: 'gallery', code: k } });
+      if (!error && data && data.title) return data;
+    } catch (e) {}
+    const res = await supabase.rpc('get_client_gallery', { p_code: k });
+    return res.error ? null : res.data;
+  }
+
   async function openGallery(raw) {
     const k = String(raw || '').replace(/[^A-Za-z0-9]/g, '');
     if (k.length < 4) { setErr('Please enter your gallery code.'); return; }
     setBusy(true);
     setErr('');
-    const { data, error } = await supabase.rpc('get_client_gallery', { p_code: k });
+    let data = await lookup(k);
+    if (!data && k.length > 8) data = await lookup(k.slice(0, 8));
     setBusy(false);
-    if (error || !data) { setErr('We could not find that gallery. Please check your code, or contact us and we will help.'); return; }
+    if (!data) { setErr('We could not find that gallery. Please check your code, or contact us and we will help.'); return; }
     setG(data);
   }
 
@@ -74,7 +84,7 @@ export default function ClientGallery() {
     m.content = 'noindex, nofollow';
     document.head.appendChild(m);
     const q = new URLSearchParams(window.location.search).get('c');
-    if (q) { setCode(q.toUpperCase()); openGallery(q); }
+    if (q) { setCode(q.toUpperCase().slice(0, 8)); openGallery(q); }
     return () => m.remove();
   }, []);
 
