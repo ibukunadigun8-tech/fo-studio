@@ -2,9 +2,25 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
+async function shrinkJpeg(file, max = 2400) {
+  if (file.type !== 'image/jpeg') return file;
+  try {
+    const bmp = await createImageBitmap(file);
+    const r = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    if (r === 1 && file.size < 1500000) return file;
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(bmp.width * r);
+    cv.height = Math.round(bmp.height * r);
+    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+    const blob = await new Promise((res) => cv.toBlob(res, 'image/jpeg', 0.85));
+    return blob || file;
+  } catch (e) { return file; }
+}
+
 async function upload(file) {
+  const body = await shrinkJpeg(file);
   const p = Date.now() + '-' + file.name.replace(/[^a-z0-9.]/gi, '_');
-  const { error } = await supabase.storage.from('site-media').upload(p, file);
+  const { error } = await supabase.storage.from('site-media').upload(p, body, { contentType: body.type || file.type });
   if (error) { alert(error.message); return null; }
   return supabase.storage.from('site-media').getPublicUrl(p).data.publicUrl;
 }
@@ -33,7 +49,7 @@ const TABLES = {
     ['name', 'Client / brand name'], ['logo_url', 'Logo (optional, white or light works best)', 'img'],
     ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   Projects: { t: 'projects', title: 'title', fields: [
-    ['title', 'Project title (e.g. Anne & Ebitari)'], ['category', 'Category (e.g. Wedding, Naming ceremony)'], ['year', 'Year'],
+    ['title', 'Project title (e.g. Anne and Tunde)'], ['category', 'Category (e.g. Wedding, Naming ceremony)'], ['year', 'Year'],
     ['cover_image', 'Cover photo', 'img'], ['story', 'Story (a few sentences about the event)', 'area'],
     ['images', 'Project photos', 'imgs'], ['is_active', 'Visible', 'bool'], ['sort_order', 'Order', 'num']] },
   Gallery: { t: 'gallery', title: 'caption', fields: [
@@ -70,17 +86,48 @@ function EvTypeSelect({ label, v, on }) {
     <select value={v || ''} onChange={(e) => on(e.target.value)}>{opts.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>);
 }
 
+function ImgField({ label, v, on }) {
+  const [msg, setMsg] = useState('');
+  return (<div><label>{label}</label>
+    {v && <div className="thumbs"><div><img src={v} alt="" /></div></div>}
+    <input type="file" accept="image/*" onChange={async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      setMsg('Uploading…');
+      const u = await upload(f);
+      e.target.value = '';
+      if (u) { on(u); setMsg('Uploaded. Now tap Save.'); } else setMsg('');
+    }} />
+    {msg && <p className="price">{msg}</p>}</div>);
+}
+
+function ImgsField({ label, v, on }) {
+  const [msg, setMsg] = useState('');
+  return (<div><label>{label}</label>
+    <div className="thumbs">{(v || []).map((u, i) => <div key={u}><img src={u} alt="" /><b onClick={() => on(v.filter((_, j) => j !== i))}>×</b></div>)}</div>
+    <input type="file" accept="image/*" multiple onChange={async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+      const out = [...(v || [])];
+      for (let i = 0; i < files.length; i++) {
+        setMsg(`Uploading ${i + 1} of ${files.length}…`);
+        const u = await upload(files[i]);
+        if (u) out.push(u);
+      }
+      e.target.value = '';
+      on(out);
+      setMsg('Uploaded. Now tap Save.');
+    }} />
+    {msg && <p className="price">{msg}</p>}</div>);
+}
+
 function Field({ f, v, on }) {
   const [k, label, type, opts] = f;
   if (type === 'evtype') return <EvTypeSelect label={label} v={v} on={on} />;
+  if (type === 'img') return <ImgField label={label} v={v} on={on} />;
+  if (type === 'imgs') return <ImgsField label={label} v={v} on={on} />;
   if (type === 'bool') return <label className="chk"><input type="checkbox" checked={!!v} onChange={(e) => on(e.target.checked)} />{label}</label>;
   if (type === 'date') return <div><label>{label}</label><input type="date" value={v || ''} onChange={(e) => on(e.target.value)} /></div>;
-  if (type === 'img') return (<div><label>{label}</label>
-    {v && <div className="thumbs"><div><img src={v} alt="" /></div></div>}
-    <input type="file" accept="image/*" onChange={async (e) => { const u = e.target.files[0] && await upload(e.target.files[0]); if (u) on(u); }} /></div>);
-  if (type === 'imgs') return (<div><label>{label}</label>
-    <div className="thumbs">{(v || []).map((u, i) => <div key={u}><img src={u} alt="" /><b onClick={() => on(v.filter((_, j) => j !== i))}>×</b></div>)}</div>
-    <input type="file" accept="image/*" multiple onChange={async (e) => { const out = [...(v || [])]; for (const fl of e.target.files) { const u = await upload(fl); if (u) out.push(u); } on(out); }} /></div>);
   if (type === 'list') return <div><label>{label}</label><textarea rows={4} value={(v || []).join('\n')} onChange={(e) => on(e.target.value.split('\n'))} /></div>;
   if (type === 'area') return <div><label>{label}</label><textarea rows={4} value={v ?? ''} onChange={(e) => on(e.target.value)} /></div>;
   if (type === 'select') return <div><label>{label}</label><select value={v || opts[0]} onChange={(e) => on(e.target.value)}>{opts.map((o) => <option key={o}>{o}</option>)}</select></div>;
@@ -92,8 +139,11 @@ function Editor({ cfg }) {
   const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(null);
   const [tn, setTn] = useState({});
+  const [err, setErr] = useState('');
   const load = async () => {
-    const { data } = await supabase.from(cfg.t).select('*').order('sort_order', { ascending: cfg.t !== 'leads' });
+    const { data, error } = await supabase.from(cfg.t).select('*').order('sort_order', { ascending: cfg.t !== 'leads' });
+    if (error) { setErr('This section is not set up yet (' + error.message + '). Run the latest SQL in Supabase, then reopen this tab.'); setRows([]); return; }
+    setErr('');
     setRows(data || []);
     if (cfg.t === 'event_packages') {
       const { data: t } = await supabase.from('event_types').select('id,name');
@@ -101,7 +151,7 @@ function Editor({ cfg }) {
     }
   };
   useEffect(() => { load(); }, [cfg.t]);
-  const set = (id, k, v) => setRows(rows.map((r) => (r.id === id ? { ...r, [k]: v } : r)));
+  const set = (id, k, v) => setRows((prev) => prev.map((r) => (r.id === id ? { ...r, [k]: v } : r)));
   const clean = (r) => {
     const { id, created_at, ...rest } = r;
     if (rest.equipment) rest.equipment = rest.equipment.map((x) => x.trim()).filter(Boolean);
@@ -126,7 +176,8 @@ function Editor({ cfg }) {
     if (cfg.t === 'testimonials') base.quote = 'Quote';
     if (cfg.t === 'gallery') base.image_url = 'https://';
     const { error } = await supabase.from(cfg.t).insert(base);
-    if (error) alert(error.message); load();
+    if (error) alert(error.message);
+    load();
   };
   const extra = (r) => {
     if (cfg.t === 'event_packages' && tn[r.event_type_id]) return ' · ' + tn[r.event_type_id];
@@ -135,6 +186,7 @@ function Editor({ cfg }) {
     return '';
   };
   return (<div>
+    {err && <p style={{ color: '#ff8a80' }}>{err}</p>}
     <button className="btn" onClick={add}>+ Add new</button><br /><br />
     {rows.map((r) => (<div className="row" key={r.id}>
       <h4 onClick={() => setOpen(open === r.id ? null : r.id)}>{open === r.id ? '▾' : '▸'} {r[cfg.title] || 'Untitled'}{extra(r)}</h4>
@@ -150,7 +202,7 @@ function Editor({ cfg }) {
 function Content() {
   const [rows, setRows] = useState([]);
   useEffect(() => { supabase.from('site_settings').select('*').order('sort_order').then(({ data }) => setRows(data || [])); }, []);
-  const set = (key, v) => setRows(rows.map((r) => (r.key === key ? { ...r, value: v } : r)));
+  const set = (key, v) => setRows((prev) => prev.map((r) => (r.key === key ? { ...r, value: v } : r)));
   const save = async () => { const { error } = await supabase.from('site_settings').upsert(rows); alert(error ? error.message : 'All saved'); };
   let last = '';
   return (<div>
@@ -184,12 +236,13 @@ export default function Admin() {
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <h2>Admin</h2><button className="btn ghost" onClick={() => supabase.auth.signOut()}>Log out</button>
     </div>
-    <p>
-      <a className="btn sm" href="/admin/requests">Booking requests</a>{' '}
-      <a className="btn sm" href="/admin/event-requests">Event requests</a>{' '}
+    <p style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      <a className="btn sm" href="/admin/client-galleries">Client galleries</a>
+      <a className="btn sm" href="/admin/event-requests">Event requests</a>
       <a className="btn sm" href="/admin/gallery">Portfolio photos</a>
+      <a className="btn sm" href="/admin/requests">Studio bookings</a>
     </p>
-    <div className="tabs">{['Content', ...Object.keys(TABLES)].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
+    <div className="tabs" style={{ flexWrap: 'wrap', overflow: 'visible' }}>{['Content', ...Object.keys(TABLES)].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
     {tab === 'Content' ? <Content /> : <Editor key={tab} cfg={TABLES[tab]} />}
   </div>);
 }
