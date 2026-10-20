@@ -26,6 +26,8 @@ const HOME_CSS = `
 .erow p{margin:0;color:var(--mute);font-size:14px}
 .erow .ep{font:13px system-ui;color:var(--gold);white-space:nowrap}
 .erow .ar{font-size:22px;color:var(--mute)}
+.hbtns{display:flex;gap:10px;max-width:460px}
+.hero .hbtns .btn{flex:1 1 0;min-width:0;text-align:center;margin:0;padding:15px 6px;font-size:12px;letter-spacing:.1em;white-space:nowrap}
 .tstrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;-webkit-overflow-scrolling:touch}
 .tcard{flex:0 0 84%;max-width:420px;scroll-snap-align:start;border:1px solid var(--line);padding:22px;background:#080808}
 .tcard p.q{font:400 18px/1.5 Georgia,serif;margin:0 0 16px}
@@ -49,7 +51,7 @@ export default function Home() {
   const { c } = d;
   const show = slides.length > 0;
   const ticker = d.event_types.length ? d.event_types.map((t) => t.name) : ['Weddings', 'Naming ceremonies', 'Birthdays', 'Corporate events', 'Graduations'];
-  const ig = [...d.gallery].filter((g) => !/^hero/i.test((g.category || '').trim())).reverse().slice(0, 6);
+  const ig = [...d.gallery].filter((g) => !/^(hero|behind)/i.test((g.category || '').trim())).reverse().slice(0, 6);
   const faqs = d.faqs.filter((f) => f.scope === 'events').slice(0, 6);
 
   return (
@@ -78,8 +80,10 @@ export default function Home() {
           <p className="eyebrow">{c.studio_full_name}</p>
           <h1>{c.hero_title}</h1>
           <p>{c.hero_subtitle}</p>
-          <Link className="btn" href="/events">Explore events</Link>{' '}
-          <Link className="btn ghost" href="/projects">Our projects</Link>
+          <div className="hbtns">
+            <Link className="btn" href="/events">Explore events</Link>
+            <Link className="btn ghost" href="/portfolio">Our portfolio</Link>
+          </div>
         </div>
       </header>
 
@@ -120,12 +124,12 @@ export default function Home() {
         <section><div className="wrap">
           <Reveal>
             <p className="lbl">// Selected work</p>
-            <h2 className="bigh">Latest <em>projects</em></h2>
+            <h2 className="bigh">Latest <em>work</em></h2>
           </Reveal>
           <div className="pgrid">
             {d.projects.slice(0, 2).map((p, k) => (
               <Reveal key={p.id} delay={k * 100}>
-                <Link href="/projects" className="pc">
+                <Link href="/portfolio" className="pc">
                   {p.cover_image ? <img src={p.cover_image} alt={p.title} loading="lazy" /> : <div className="ph" />}
                   <h3>{p.title}</h3>
                   <span>{[p.category, p.year].filter(Boolean).join(' · ')}</span>
@@ -133,7 +137,7 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
-          <p><Link className="btn ghost" href="/projects">View all projects</Link></p>
+          <p><Link className="btn ghost" href="/portfolio">View full portfolio</Link></p>
         </div></section>
       )}
 
