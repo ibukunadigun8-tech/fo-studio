@@ -30,11 +30,11 @@ export default function About() {
           </>
         )}
 
-        <p style={{ marginTop: 40 }}>
-          {c.instagram && <><a className="btn ghost" href={c.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>{' '}</>}
-          <Link className="btn" href="/events">Explore events</Link>{' '}
-          <Link className="btn ghost" href="/projects">Our projects</Link>
-        </p>
+        <div className="btnrow" style={{ marginTop: 40 }}>
+          {c.instagram && <a className="btn ghost" href={c.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
+          <Link className="btn" href="/events">Explore events</Link>
+          <Link className="btn ghost" href="/portfolio">Our portfolio</Link>
+        </div>
       </div>
     </Shell>
   );
