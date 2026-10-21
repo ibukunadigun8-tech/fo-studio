@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
-import { useSite, money, Shell } from '../../lib/data';
+import { useSite, money, priceText, pricesOn, Shell } from '../../lib/data';
 
 const depText = (c, p) => {
   if (p.deposit_type === 'percent') return `Deposit: ${Number(p.deposit_value)}% to hold your date`;
@@ -63,6 +63,7 @@ export default function Events() {
   const d = useSite(['event_types', 'event_packages', 'event_addons', 'faqs']);
   if (!d) return <div className="load">F.O STUDIO</div>;
   const { c } = d;
+  const showP = pricesOn(c);
   const faqs = d.faqs.filter((f) => f.scope === 'events');
   return (
     <Shell c={c}>
@@ -82,15 +83,15 @@ export default function Events() {
                   <p className="mute">{t.tagline}</p>
                   <p className="mute" style={{ fontSize: 14 }}>{t.description}</p>
                   {t.images?.length > 0 && <div className="strip">{t.images.map((u) => <img key={u} src={u} alt="" loading="lazy" />)}</div>}
-                  {t.starting_price ? <p className="price">From {money(c, t.starting_price)}</p> : null}
+                  {priceText(c, t.starting_price) ? <p className="price">From {priceText(c, t.starting_price)}</p> : null}
                   {pk.map((p) => (
                     <div className={'pkg' + (p.is_popular ? ' pop' : '')} key={p.id}>
                       {p.is_popular && <span className="badge">Most popular</span>}
                       <h3 style={{ margin: 0 }}>{p.name}</h3>
-                      <p className="price" style={{ margin: '6px 0' }}>{money(c, p.price)}</p>
+                      <p className="price" style={{ margin: '6px 0' }}>{priceText(c, p.price) || 'Price on request'}</p>
                       <p className="spec">{p.hours} hrs · {p.photographers} photographer{p.photographers > 1 ? 's' : ''} · {p.edited_photos} edited photos · delivered in {p.delivery_days} days</p>
                       <ul>{(p.includes || []).map((x) => <li key={x}>{x}</li>)}</ul>
-                      <p className="dep">{depText(c, p)}</p>
+                      {showP && Number(p.price) > 0 && <p className="dep">{depText(c, p)}</p>}
                       <Link className="btn sm" href={`/events/book?type=${t.slug}&pkg=${p.id}`}>Choose {p.name}</Link>
                     </div>
                   ))}
@@ -109,7 +110,8 @@ export default function Events() {
             <div className="grid">
               {d.event_addons.map((a) => (
                 <div className="card" key={a.id}><div className="body">
-                  <h3>{a.name}</h3><p className="mute">{a.description}</p><p className="price">+ {money(c, a.price)}</p>
+                  <h3>{a.name}</h3><p className="mute">{a.description}</p>
+                  {priceText(c, a.price) ? <p className="price">+ {priceText(c, a.price)}</p> : null}
                 </div></div>
               ))}
             </div>
