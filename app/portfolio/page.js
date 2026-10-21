@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSite, Shell, Reveal } from '../../lib/data';
+import { useSite, Shell, Reveal, ExpandingCards } from '../../lib/data';
 
 const PF_CSS = `
 .pills{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;margin-top:16px}
@@ -9,14 +9,14 @@ const PF_CSS = `
 .pill.on{background:var(--gold);color:#000;border-color:var(--gold)}
 .pfgrid{columns:2;column-gap:8px}
 @media(min-width:760px){.pfgrid{columns:3;column-gap:12px}}
-.pfitem{display:block;width:100%;padding:0;border:0;background:#111;margin:0 0 8px;break-inside:avoid;cursor:zoom-in;overflow:hidden}
+.pfitem{display:block;width:100%;padding:0;border:0;background:#111;margin:0 0 8px;break-inside:avoid;cursor:zoom-in;overflow:hidden;border-radius:12px}
 .pfitem img{width:100%;height:auto;display:block}
 .pcbtn{background:none;border:0;padding:0;text-align:left;color:inherit;cursor:pointer;width:100%;font:inherit}
 .pj{position:fixed;inset:0;z-index:100;background:#000;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .pjx{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:101;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;cursor:pointer}
 .pjin{max-width:760px;margin:0 auto;padding:calc(70px + env(safe-area-inset-top,0px)) 20px 60px}
 .pjimg{display:block;width:100%;padding:0;border:0;background:none;margin:0 0 10px;cursor:zoom-in}
-.pjimg img{width:100%;height:auto;display:block}
+.pjimg img{width:100%;height:auto;display:block;border-radius:12px}
 .lb{position:fixed;inset:0;z-index:130;background:rgba(0,0,0,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:pan-y}
 .lb img{max-width:100%;max-height:78vh;object-fit:contain;display:block}
 .lbcap{color:var(--mute);font:14px system-ui;text-align:center;padding:14px 60px 0;min-height:44px}
@@ -97,19 +97,29 @@ export default function Portfolio() {
                 {projCats.map((x) => <button key={x} className={'pill' + (pcat === x ? ' on' : '')} onClick={() => setPcat(x)}>{x}</button>)}
               </div>
             )}
-            <div className="pgrid" style={{ marginTop: 18 }}>
-              {projects.map((p, k) => (
-                <Reveal key={p.id} delay={k * 70}>
-                  <button className="pcbtn" onClick={() => setOpenId(p.id)} aria-label={'Open ' + p.title}>
-                    <div className="pc">
-                      {p.cover_image ? <img src={p.cover_image} alt={p.title} loading="lazy" /> : <div className="ph" />}
-                      <h3>{p.title}</h3>
-                      <span>{[p.category, p.year].filter(Boolean).join(' · ')}</span>
-                    </div>
-                  </button>
-                </Reveal>
-              ))}
-            </div>
+            {projects.length > 0 && projects.length <= 7 ? (
+              <div style={{ marginTop: 18 }}>
+                <ExpandingCards items={projects.map((p) => ({
+                  id: p.id, img: p.cover_image, title: p.title,
+                  text: [p.category, p.year].filter(Boolean).join(' · '),
+                  onOpen: () => setOpenId(p.id), cta: 'View project',
+                }))} />
+              </div>
+            ) : (
+              <div className="pgrid" style={{ marginTop: 18 }}>
+                {projects.map((p, k) => (
+                  <Reveal key={p.id} delay={k * 70}>
+                    <button className="pcbtn" onClick={() => setOpenId(p.id)} aria-label={'Open ' + p.title}>
+                      <div className="pc">
+                        {p.cover_image ? <img src={p.cover_image} alt={p.title} loading="lazy" /> : <div className="ph" />}
+                        <h3>{p.title}</h3>
+                        <span>{[p.category, p.year].filter(Boolean).join(' · ')}</span>
+                      </div>
+                    </button>
+                  </Reveal>
+                ))}
+              </div>
+            )}
           </>
         )}
 
