@@ -202,7 +202,7 @@ export default function ClientGalleriesAdmin() {
       </div>
       {err && <p style={{ color: '#ff8a80' }}>{err}</p>}
 
-      <div className="row">
+      <div className="row" style={{ display: store === 'supabase' ? 'block' : 'none' }}>
         <label>Where new photos are stored</label>
         <p className="price" style={{ margin: '4px 0 0' }}>
           {store === 'checking' ? 'Checking…' : store === 'r2' ? 'Cloudflare R2 ✓ (10 GB free, free downloads)' : 'Supabase (Cloudflare R2 is not connected yet)'}
