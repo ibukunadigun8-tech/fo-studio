@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useSite, money, Shell } from '../../lib/data';
+import { useSite, priceText, Shell } from '../../lib/data';
 
 export default function Studio() {
   const d = useSite(['spaces']);
@@ -26,7 +26,7 @@ export default function Studio() {
                 {(s.equipment || []).length > 0 && (
                   <ul className="mute" style={{ paddingLeft: 18, fontSize: 14 }}>{s.equipment.map((x) => <li key={x}>{x}</li>)}</ul>
                 )}
-                <p className="price">{money(c, s.hourly_price)} / hour</p>
+                {priceText(c, s.hourly_price) ? <p className="price">{priceText(c, s.hourly_price)} / hour</p> : null}
                 <Link className="btn sm" href={`/book?space=${s.slug}`}>Book this space</Link>
               </div>
             </div>
@@ -36,10 +36,10 @@ export default function Studio() {
         {c.studio_rules && (<><h2 style={{ marginTop: 40 }}>Studio rules</h2><p className="mute" style={{ whiteSpace: 'pre-line' }}>{c.studio_rules}</p></>)}
         {c.cancellation_policy && (<><h2>Cancellation</h2><p className="mute" style={{ whiteSpace: 'pre-line' }}>{c.cancellation_policy}</p></>)}
 
-        <p style={{ marginTop: 30 }}>
-          <Link className="btn" href="/book">Book a space</Link>{' '}
+        <div className="btnrow" style={{ marginTop: 30 }}>
+          <Link className="btn" href="/book">Book a space</Link>
           <Link className="btn ghost" href="/events">Explore events</Link>
-        </p>
+        </div>
       </div>
     </Shell>
   );
