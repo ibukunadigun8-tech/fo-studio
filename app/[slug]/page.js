@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
-import { useSite, money, Shell } from '../../lib/data';
+import { useSite, money, priceText, pricesOn, Shell } from '../../lib/data';
 
 export default function Page() {
   const { slug } = useParams();
-  const d = useSite(['spaces', 'services', 'addons', 'faqs', 'gallery']);
+  const d = useSite(['spaces', 'services', 'addons']);
   if (!d) return <div className="load">F.O STUDIO</div>;
-  const V = { spaces: Spaces, services: Services, portfolio: Portfolio, about: About, contact: Contact, book: Book }[slug];
+  const V = { spaces: Spaces, services: Services, contact: Contact, book: Book }[slug];
   return <Shell c={d.c}>{V ? <V d={d} /> : <div className="wrap pg"><h1>Page not found</h1><Link className="btn" href="/">Home</Link></div>}</Shell>;
 }
 
@@ -22,7 +22,7 @@ function Spaces({ d }) {
         <div className="body"><h3>{s.name}</h3><p className="mute">{s.tagline}</p><p className="mute" style={{ fontSize: 14 }}>{s.description}</p>
           <div className="tags">{(s.equipment || []).map((e) => <span key={e}>{e}</span>)}</div>
           <p className="mute" style={{ fontSize: 14 }}>{s.size_sqft ? s.size_sqft + ' sq ft · ' : ''}up to {s.capacity} people · {s.min_hours}–{s.max_hours} hrs</p>
-          <p className="price">{money(c, s.hourly_price)} / hour</p>
+          {priceText(c, s.hourly_price) ? <p className="price">{priceText(c, s.hourly_price)} / hour</p> : null}
           <Link className="btn" href={`/book?space=${s.slug}`}>Book this space</Link></div>
       </div>))}</div></div>);
 }
@@ -32,26 +32,10 @@ function Services({ d }) {
   return (<div className="wrap pg"><p className="eyebrow">Services</p><h1>{c.services_title}</h1>
     <div className="grid" style={{ marginTop: 30 }}>{d.services.map((s) => (
       <div className="card" key={s.id}><div className="body"><h3>{s.title}</h3><p className="mute">{s.description}</p>
-        {s.starting_price ? <p className="price">From {money(c, s.starting_price)}</p> : null}</div></div>))}</div>
+        {priceText(c, s.starting_price) ? <p className="price">From {priceText(c, s.starting_price)}</p> : null}</div></div>))}</div>
     {d.addons.length > 0 && <><h2 style={{ marginTop: 50 }}>Add-ons</h2>
-      <div className="grid">{d.addons.map((a) => <div className="card" key={a.id}><div className="body"><h3>{a.name}</h3><p className="mute">{a.description}</p><p className="price">+ {money(c, a.price)}</p></div></div>)}</div></>}
+      <div className="grid">{d.addons.map((a) => <div className="card" key={a.id}><div className="body"><h3>{a.name}</h3><p className="mute">{a.description}</p>{priceText(c, a.price) ? <p className="price">+ {priceText(c, a.price)}</p> : null}</div></div>)}</div></>}
     <p style={{ marginTop: 40 }}><Link className="btn" href="/book">Book a session</Link></p></div>);
-}
-
-function Portfolio({ d }) {
-  return (<div className="wrap pg"><p className="eyebrow">Work</p><h1>Portfolio</h1>
-    {d.gallery.length === 0 ? <p className="mute">Photos coming soon.</p> :
-      <div className="grid" style={{ marginTop: 30 }}>{d.gallery.map((g) => <img key={g.id} src={g.image_url} alt={g.caption || ''} style={{ width: '100%', height: 280, objectFit: 'cover' }} />)}</div>}</div>);
-}
-
-function About({ d }) {
-  const { c } = d;
-  return (<div className="wrap pg" style={{ maxWidth: 800 }}><p className="eyebrow">{c.tagline}</p><h1>{c.about_title}</h1>
-    <p className="mute" style={{ fontSize: 18 }}>{c.about_text}</p>
-    <h2 style={{ marginTop: 40 }}>Studio rules</h2><p className="mute">{c.studio_rules}</p>
-    <h2>Cancellation</h2><p className="mute">{c.cancellation_policy}</p>
-    <h2 style={{ marginTop: 40 }}>{c.faq_title}</h2>
-    {d.faqs.map((f) => <details key={f.id}><summary>{f.question}</summary><p className="mute">{f.answer}</p></details>)}</div>);
 }
 
 function Contact({ d }) {
@@ -66,6 +50,7 @@ function Contact({ d }) {
 
 function Book({ d }) {
   const { c } = d;
+  const showP = pricesOn(c);
   const open = Number(c.open_hour || 9), close = Number(c.close_hour || 20);
   const [f, setF] = useState({ space_id: d.spaces[0]?.id || '', service: '', name: '', email: '', phone: '', date: '', start: open, hours: 1, notes: '', addons: [] });
   const [err, setErr] = useState(''); const [done, setDone] = useState(null); const [busy, setBusy] = useState(false);
@@ -107,8 +92,8 @@ function Book({ d }) {
     return (<div className="wrap pg" style={{ maxWidth: 640 }}><div className="ok">
       <p className="eyebrow">Request received</p><h2>Thank you, {r.customer_name.split(' ')[0]}.</h2>
       <p>Your reference is <b className="price">{done.ref}</b>. We have your request for <b>{done.space}</b> on {r.session_date} at {r.start_time} ({r.hours} hr). We will confirm shortly.</p>
-      <p>Estimated total: <b className="price">{money(c, r.estimated_total)}</b></p>
-      {(c.bank_name || c.account_no) && <><h3>Payment details</h3>
+      {showP ? <p>Estimated total: <b className="price">{money(c, r.estimated_total)}</b></p> : <p>We will send you a quote shortly.</p>}
+      {showP && (c.bank_name || c.account_no) && <><h3>Payment details</h3>
         <p>Bank: {c.bank_name}<br />Account No: {c.account_no}<br />Account Name: {c.account_name}</p><p className="mute">{c.payment_instructions}</p></>}
       <a className="btn" href={`https://wa.me/${c.whatsapp}?text=${encodeURIComponent(msg)}`}>Continue on WhatsApp</a></div></div>);
   }
@@ -116,7 +101,7 @@ function Book({ d }) {
   return (<div className="wrap pg" style={{ maxWidth: 640 }}><p className="eyebrow">Reservations</p><h1>Book a session</h1>
     <form className="form" onSubmit={submit}>
       <label>Space</label>
-      <select value={f.space_id} onChange={(e) => set('space_id', e.target.value)}>{d.spaces.map((s) => <option key={s.id} value={s.id}>{s.name} - {money(c, s.hourly_price)}/hr</option>)}</select>
+      <select value={f.space_id} onChange={(e) => set('space_id', e.target.value)}>{d.spaces.map((s) => <option key={s.id} value={s.id}>{s.name}{priceText(c, s.hourly_price) ? ` - ${priceText(c, s.hourly_price)}/hr` : ''}</option>)}</select>
       <label>Service</label>
       <select value={f.service} onChange={(e) => set('service', e.target.value)}><option value="">Select (optional)</option>{d.services.map((s) => <option key={s.id}>{s.title}</option>)}</select>
       <label>Date</label><input type="date" min={today} value={f.date} onChange={(e) => set('date', e.target.value)} />
@@ -124,12 +109,12 @@ function Book({ d }) {
         <select value={f.start} onChange={(e) => set('start', Number(e.target.value))}>{Array.from({ length: Math.max(close - open, 1) }, (_, i) => open + i).map((h) => <option key={h} value={h}>{hh(h)}</option>)}</select></div>
         <div><label>Hours</label><select value={f.hours} onChange={(e) => set('hours', Number(e.target.value))}>{Array.from({ length: space?.max_hours || 8 }, (_, i) => i + 1).map((h) => <option key={h}>{h}</option>)}</select></div></div>
       {d.addons.length > 0 && <><label>Add-ons</label>{d.addons.map((a) => (
-        <label className="chk" key={a.id}><input type="checkbox" checked={f.addons.includes(a.id)} onChange={(e) => set('addons', e.target.checked ? [...f.addons, a.id] : f.addons.filter((x) => x !== a.id))} />{a.name} (+{money(c, a.price)})</label>))}</>}
+        <label className="chk" key={a.id}><input type="checkbox" checked={f.addons.includes(a.id)} onChange={(e) => set('addons', e.target.checked ? [...f.addons, a.id] : f.addons.filter((x) => x !== a.id))} />{a.name}{priceText(c, a.price) ? ` (+${priceText(c, a.price)})` : ''}</label>))}</>}
       <label>Full name</label><input value={f.name} onChange={(e) => set('name', e.target.value)} />
       <label>Email</label><input type="email" value={f.email} onChange={(e) => set('email', e.target.value)} />
       <label>Phone / WhatsApp</label><input type="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} />
       <label>Notes (optional)</label><textarea rows={3} value={f.notes} onChange={(e) => set('notes', e.target.value)} />
-      <div className="total">Estimated total: {money(c, total)}</div>
+      {showP ? <div className="total">Estimated total: {money(c, total)}</div> : <div className="total">We will send you a quote</div>}
       <button className="btn" disabled={busy}>{busy ? 'Sending…' : 'Send booking request'}</button>
       {err && <p className="err">{err}</p>}
     </form></div>);
