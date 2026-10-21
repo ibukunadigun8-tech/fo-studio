@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSite, money, Shell, Reveal, Marquee } from '../lib/data';
+import { useSite, priceText, Shell, Reveal, Marquee, ExpandingCards } from '../lib/data';
 
 const HOME_CSS = `
 .hs{position:absolute;inset:0;z-index:0;overflow:hidden;background:#000}
@@ -17,15 +17,6 @@ const HOME_CSS = `
 .avail{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.25);border-radius:30px;padding:8px 14px;font:12px system-ui;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px;background:rgba(0,0,0,.35)}
 .avail i{width:8px;height:8px;border-radius:50%;background:#3ddc84;animation:avp 2s ease-out infinite}
 @keyframes avp{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}100%{box-shadow:0 0 0 10px rgba(61,220,132,0)}}
-.erow{display:flex;align-items:center;gap:16px;padding:22px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;transition:padding .3s}
-.erow:first-of-type{border-top:1px solid var(--line)}
-.erow:hover{padding-left:10px}
-.erow .en{font:13px system-ui;color:var(--gold);letter-spacing:.15em;min-width:28px}
-.erow .et{flex:1}
-.erow h3{margin:0 0 4px;font:400 clamp(22px,5.5vw,34px)/1.15 Georgia,serif}
-.erow p{margin:0;color:var(--mute);font-size:14px}
-.erow .ep{font:13px system-ui;color:var(--gold);white-space:nowrap}
-.erow .ar{font-size:22px;color:var(--mute)}
 .hbtns{display:flex;gap:10px;max-width:460px}
 .hero .hbtns .btn{flex:1 1 0;min-width:0;text-align:center;margin:0;padding:15px 6px;font-size:12px;letter-spacing:.1em;white-space:nowrap}
 .tstrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;-webkit-overflow-scrolling:touch}
@@ -105,16 +96,11 @@ export default function Home() {
             {c.events_intro && <p className="mute" style={{ maxWidth: 640 }}>{c.events_intro}</p>}
           </Reveal>
           <div style={{ marginTop: 18 }}>
-            {d.event_types.map((t, k) => (
-              <Reveal key={t.id} delay={k * 60}>
-                <Link className="erow" href="/events">
-                  <span className="en">{String(k + 1).padStart(2, '0')}</span>
-                  <span className="et"><h3>{t.name}</h3><p>{t.tagline}</p></span>
-                  {t.starting_price ? <span className="ep">From {money(c, t.starting_price)}</span> : null}
-                  <span className="ar">→</span>
-                </Link>
-              </Reveal>
-            ))}
+            <ExpandingCards items={d.event_types.slice(0, 7).map((t) => ({
+              id: t.id, img: t.cover_image, title: t.name, text: t.tagline,
+              price: priceText(c, t.starting_price) ? 'From ' + priceText(c, t.starting_price) : '',
+              href: '/events', cta: 'View packages',
+            }))} />
           </div>
           <p style={{ marginTop: 24 }}><Link className="btn" href="/events">See all events and packages</Link></p>
         </div></section>
