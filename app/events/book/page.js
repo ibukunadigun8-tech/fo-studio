@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabase';
-import { useSite, money, Shell } from '../../../lib/data';
+import { useSite, money, priceText, pricesOn, Shell } from '../../../lib/data';
 
 const CAL_CSS = `
 .cal{border:1px solid var(--line);padding:12px;margin:6px 0 14px;background:#080808}
@@ -66,6 +66,7 @@ export default function EventBookPage() {
 
 function EventBook({ d }) {
   const { c } = d;
+  const showP = pricesOn(c);
   const [f, setF] = useState({ type_id: d.event_types[0]?.id || '', pkg: 'custom', name: '', email: '', phone: '', date: '', time: '', venue: '', city: '', guests: '', notes: '', addons: [] });
   const [taken, setTaken] = useState(new Set());
   const [err, setErr] = useState('');
@@ -135,13 +136,13 @@ function EventBook({ d }) {
         <p className="eyebrow">Request received</p>
         <h2>Thank you, {r.customer_name.split(' ')[0]}.</h2>
         <p>Your reference is <b className="price">{done.ref}</b>. We have your request for <b>{r.event_type_name}</b> ({r.package_name}) on {r.event_date}. We will contact you shortly to confirm availability.</p>
-        {r.estimated_total != null ? (
+        {showP && r.estimated_total != null ? (
           <>
             <p>Estimated total: <b className="price">{money(c, r.estimated_total)}</b></p>
             {r.deposit_due > 0 && <p>Deposit to hold your date: <b className="price">{money(c, r.deposit_due)}</b></p>}
           </>
-        ) : <p>We will send you a custom quote.</p>}
-        {(c.bank_name || c.account_no) && r.deposit_due > 0 && (
+        ) : <p>We will send you a quote.</p>}
+        {showP && (c.bank_name || c.account_no) && r.deposit_due > 0 && (
           <><h3>Payment details</h3>
             <p>Bank: {c.bank_name}<br />Account No: {c.account_no}<br />Account Name: {c.account_name}</p>
             <p className="mute">{c.payment_instructions}</p></>
@@ -162,7 +163,7 @@ function EventBook({ d }) {
         </select>
         <label>Package</label>
         <select value={f.pkg} onChange={(e) => set('pkg', e.target.value)}>
-          {pkgs.map((p) => <option key={p.id} value={p.id}>{p.name} - {money(c, p.price)}</option>)}
+          {pkgs.map((p) => <option key={p.id} value={p.id}>{p.name}{priceText(c, p.price) ? ` - ${priceText(c, p.price)}` : ''}</option>)}
           <option value="custom">Custom quote (tell us what you need)</option>
         </select>
         <label>Event date {f.date && <span className="price">· {f.date}</span>}</label>
@@ -175,15 +176,15 @@ function EventBook({ d }) {
         <label>City</label><input value={f.city} onChange={(e) => set('city', e.target.value)} />
         {d.event_addons.length > 0 && <><label>Add-ons</label>{d.event_addons.map((a) => (
           <label className="chk" key={a.id}><input type="checkbox" checked={f.addons.includes(a.id)}
-            onChange={(e) => set('addons', e.target.checked ? [...f.addons, a.id] : f.addons.filter((x) => x !== a.id))} />{a.name} (+{money(c, a.price)})</label>
+            onChange={(e) => set('addons', e.target.checked ? [...f.addons, a.id] : f.addons.filter((x) => x !== a.id))} />{a.name}{priceText(c, a.price) ? ` (+${priceText(c, a.price)})` : ''}</label>
         ))}</>}
         <label>Full name</label><input value={f.name} onChange={(e) => set('name', e.target.value)} />
         <label>Email</label><input type="email" value={f.email} onChange={(e) => set('email', e.target.value)} />
         <label>Phone / WhatsApp</label><input type="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} />
         <label>Tell us about your event</label><textarea rows={4} value={f.notes} onChange={(e) => set('notes', e.target.value)} />
-        {pkg ? (
+        {showP && pkg ? (
           <div className="total">Estimated total: {money(c, total)}{deposit > 0 && <div className="dep">Deposit to hold date: {money(c, deposit)}</div>}</div>
-        ) : <div className="total">We will send you a custom quote</div>}
+        ) : <div className="total">We will send you a quote</div>}
         <button className="btn" disabled={busy}>{busy ? 'Sending…' : 'Send event request'}</button>
         {err && <p className="err">{err}</p>}
       </form>
