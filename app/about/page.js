@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useSite, Shell, Reveal } from '../../lib/data';
+import { useSite, Shell, Reveal, LapGallery } from '../../lib/data';
 
 export default function About() {
   const d = useSite(['faqs', 'gallery']);
@@ -19,7 +19,7 @@ export default function About() {
         {bts.length > 0 && (
           <>
             <h2 style={{ marginTop: 40 }}>Behind the scenes</h2>
-            <div className="igstrip">{bts.map((g) => <img key={g.id} src={g.image_url} alt={g.caption || ''} loading="lazy" />)}</div>
+            <LapGallery photos={bts.map((g) => ({ url: g.image_url, caption: g.caption }))} label="Scene" />
           </>
         )}
 
