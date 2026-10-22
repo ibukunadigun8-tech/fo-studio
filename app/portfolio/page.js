@@ -1,16 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSite, Shell, Reveal, ExpandingCards } from '../../lib/data';
+import { useSite, Shell, Reveal, ExpandingCards, LapGallery } from '../../lib/data';
 
 const PF_CSS = `
 .pills{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;margin-top:16px}
 .pill{white-space:nowrap;background:none;color:var(--mute);border:1px solid var(--line);padding:9px 16px;border-radius:30px;font:12px system-ui;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
 .pill.on{background:var(--gold);color:#000;border-color:var(--gold)}
-.pfgrid{columns:2;column-gap:8px}
-@media(min-width:760px){.pfgrid{columns:3;column-gap:12px}}
-.pfitem{display:block;width:100%;padding:0;border:0;background:#111;margin:0 0 8px;break-inside:avoid;cursor:zoom-in;overflow:hidden;border-radius:12px}
-.pfitem img{width:100%;height:auto;display:block}
 .pcbtn{background:none;border:0;padding:0;text-align:left;color:inherit;cursor:pointer;width:100%;font:inherit}
 .pj{position:fixed;inset:0;z-index:100;background:#000;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .pjx{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:101;width:46px;height:46px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:20px;cursor:pointer}
@@ -131,14 +127,7 @@ export default function Portfolio() {
                 {libCats.map((x) => <button key={x} className={'pill' + (gcat === x ? ' on' : '')} onClick={() => setGcat(x)}>{x}</button>)}
               </div>
             )}
-            <div className="pfgrid">
-              {photos.map((g, i) => (
-                <button className="pfitem" key={g.id} aria-label={g.caption || 'Open photo'}
-                  onClick={() => setLb({ items: photos.map((x) => ({ url: x.image_url, caption: x.caption })), i })}>
-                  <img src={g.image_url} alt={g.caption || ''} loading="lazy" decoding="async" />
-                </button>
-              ))}
-            </div>
+            <LapGallery key={gcat} photos={photos.map((g) => ({ url: g.image_url, caption: g.caption }))} label="Photo" />
           </>
         )}
 
