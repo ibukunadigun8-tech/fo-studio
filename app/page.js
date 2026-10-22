@@ -19,6 +19,8 @@ const HOME_CSS = `
 @keyframes avp{0%{box-shadow:0 0 0 0 rgba(61,220,132,.6)}100%{box-shadow:0 0 0 10px rgba(61,220,132,0)}}
 .hbtns{display:flex;gap:10px;max-width:460px}
 .hero .hbtns .btn{flex:1 1 0;min-width:0;text-align:center;margin:0;padding:15px 6px;font-size:12px;letter-spacing:.1em;white-space:nowrap}
+.xcs .xc{height:320px !important}
+@media(min-width:768px){.xcs .xc{height:300px !important}}
 .tstrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;-webkit-overflow-scrolling:touch}
 .tcard{flex:0 0 84%;max-width:420px;scroll-snap-align:start;border:1px solid var(--line);padding:22px;background:#080808}
 .tcard p.q{font:400 18px/1.5 Georgia,serif;margin:0 0 16px}
@@ -107,23 +109,19 @@ export default function Home() {
       )}
 
       {d.projects.length > 0 && (
-        <section><div className="wrap">
+        <section style={{ paddingTop: 24, paddingBottom: 24 }}><div className="wrap">
           <Reveal>
             <p className="lbl">// Selected work</p>
-            <h2 className="bigh">Latest <em>work</em></h2>
+            <h2 className="bigh" style={{ fontSize: 'clamp(28px,6vw,40px)', marginBottom: 14 }}>Latest <em>work</em></h2>
           </Reveal>
-          <div className="pgrid">
-            {d.projects.slice(0, 2).map((p, k) => (
-              <Reveal key={p.id} delay={k * 100}>
-                <Link href="/portfolio" className="pc">
-                  {p.cover_image ? <img src={p.cover_image} alt={p.title} loading="lazy" /> : <div className="ph" />}
-                  <h3>{p.title}</h3>
-                  <span>{[p.category, p.year].filter(Boolean).join(' · ')}</span>
-                </Link>
-              </Reveal>
-            ))}
+          <div className="xcs">
+            <ExpandingCards items={d.projects.slice(0, 5).map((p) => ({
+              id: p.id, img: p.cover_image, title: p.title,
+              text: [p.category, p.year].filter(Boolean).join(' · '),
+              href: '/portfolio', cta: 'View',
+            }))} />
           </div>
-          <p><Link className="btn ghost" href="/portfolio">View full portfolio</Link></p>
+          <p style={{ marginTop: 14 }}><Link className="btn ghost" href="/portfolio">View full portfolio</Link></p>
         </div></section>
       )}
 
