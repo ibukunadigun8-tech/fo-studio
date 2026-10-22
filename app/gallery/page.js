@@ -1,16 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useSite, Shell, ExpandingCards } from '../../lib/data';
+import { useSite, Shell, LapGallery } from '../../lib/data';
 
 const CG_CSS = `
 .cg-form{max-width:460px;margin-top:22px}
 .cg-form input{width:100%;background:#0b0b0b;color:#fff;border:1px solid var(--line);padding:16px;font:600 20px system-ui;letter-spacing:.35em;text-align:center;text-transform:uppercase;margin:0 0 14px;border-radius:0}
 .cg-meta{font:13px system-ui;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:6px 0 18px}
-.cg-grid{columns:2;column-gap:8px;margin-top:18px}
-@media(min-width:760px){.cg-grid{columns:3;column-gap:12px}}
-.cg-item{display:block;width:100%;padding:0;border:0;background:#111;margin:0 0 8px;break-inside:avoid;cursor:zoom-in;overflow:hidden;border-radius:12px}
-.cg-item img{width:100%;height:auto;display:block}
 .cg-view{position:fixed;inset:0;z-index:140;background:rgba(0,0,0,.98);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:pan-y}
 .cg-view img{max-width:100%;max-height:74vh;object-fit:contain;display:block}
 .cg-count{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:20px;color:var(--mute);font:13px system-ui;letter-spacing:.15em}
@@ -165,23 +161,11 @@ export default function ClientGallery() {
             {prog && <p className="cg-prog">{prog}</p>}
             {photos.length === 0 && <p className="mute">Your photos are being prepared. Please check back soon.</p>}
 
-            {photos.length >= 3 && (
+            {photos.length > 0 && (
               <div style={{ marginTop: 24 }}>
-                <ExpandingCards items={photos.slice(0, 6).map((p, i) => ({
-                  id: 'h' + i, img: p.t || p.f, title: 'Photo ' + (i + 1),
-                  onOpen: () => setView(i), cta: 'View photo',
-                }))} />
-                <h2 style={{ marginTop: 36 }}>All photos</h2>
+                <LapGallery photos={photos.map((p) => ({ url: p.f, thumb: p.t || p.f }))} onOpen={(i) => setView(i)} label="Photo" />
               </div>
             )}
-
-            <div className="cg-grid">
-              {photos.map((p, i) => (
-                <button className="cg-item" key={(p.f || '') + i} aria-label={`Open photo ${i + 1}`} onClick={() => setView(i)}>
-                  <img src={p.t || p.f} alt="" loading="lazy" decoding="async" />
-                </button>
-              ))}
-            </div>
           </>
         )}
       </div>
